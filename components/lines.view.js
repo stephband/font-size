@@ -1,5 +1,5 @@
 
-import { get, overload } from '../../fn/module.js';
+import { get, overload, remove } from '../../fn/module.js';
 import Sparky, { Observer, Stream, delegate, observe, getScope } from '../../sparky/module.js';
 
 export const lines = [{
