@@ -1,4 +1,0 @@
-:root       { --shade: rgba(0,0,0,0.2); }
-.shade-fg   { color: rgba(0,0,0,0.2); }
-.shade-bg   { background-color: rgba(0,0,0,0.2); }
-.shade-fill { fill: rgba(0,0,0,0.2); }

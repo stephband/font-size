@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
 
     <meta name="author" content="@{[author.twitter]}" />
-    <meta name="description" content="Documentation for {[title]}. {[description]}" />
+    <meta name="description" content="" />
     <meta name="viewport" content="width=device-width" />
 
-    <title>Size calculator</title>
+    <title>Adaptive font-size calculator</title>
 
     <script>
     document.documentElement.className = 'js';
@@ -23,21 +23,31 @@
     <link rel="icon" type="image/png" href="images/logo-128x128.png" sizes="128x128">
 
     <link rel="stylesheet" href="../bolt/dist/bolt.min.css" />
-    <link rel="stylesheet" href="../dom/css/dom.css" />
+    <link rel="stylesheet" href="../bolt/fonts/source-sans-pro.css" />
+    <link rel="stylesheet" href="../bolt/fonts/fira-mono.css" />
     <link rel="stylesheet" href="../fn/css/prism-cruncher.css" />
-
-    <link rel="stylesheet" href="css/thumb.css" />
-    <link rel="stylesheet" href="css/color.css" />
-
-    <template id="calc-line">
-        <th>{[name]}</th>
-        <td><input type="text" :value="{[size]}" /></td>
-        <td fn="breakpoints each">{[.]}</td>
-    </template>
+    <link rel="stylesheet" href="../dom/css/dom.css" />
 
     <style>
         :root {
             background-color: #f0f1e6;
+        }
+
+        body {
+            font-family: 'Source Sans Pro';
+        }
+
+        .text-01, h1,
+        .text-02, h2,
+        .text-03, h3,
+        .text-04, h4,
+        .text-05, h5,
+        .text-06, h6,
+        .text-08, body,
+        .text-09 {
+            font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
+            font-style: none;
+            text-transform: none;
         }
 
         .example-td {
@@ -62,16 +72,17 @@
             -moz-appearance: textfield;
         }
 
-        .rem-label {
+        .rem-output {
             display: inline-block;
             font-size: 0.625rem;
-            font-family: FiraMono, monospace;
+            font-family: 'Fira Mono', monospace;
             width: 3.75rem;
             margin: 0;
             margin-left: -3.75rem;
             padding-right: var(--input-padding-right);
             text-align: right;
             color: #888888;
+            pointer-events: none;
         }
 
         output[type="number"] {
@@ -80,6 +91,8 @@
         }
 
         .body-grid {
+            padding-top: 1.875rem;
+            color: #101e23;
             row-gap: 3rem;
             grid-template-rows: min-content min-content min-content 1fr;
         }
@@ -87,16 +100,30 @@
         .body-grid > * {
             margin: 0;
             width: 100%;
+            padding-left: 11.11111111%;
+            padding-right: 11.11111111%;
+        }
+
+        .body-grid > .striped-table {
+            margin-left: -0.75rem;
+            margin-right: -0.75rem;
+        }
+
+        .body-grid > pre {
+            background-color: #101e23;
         }
 
         .body-grid > pre > code {
             height: 100%;
+            color: #e7e8e2;
+            background-color: transparent;
+            box-shadow: none;
         }
 
         .add-button {
-            padding-left: 3.375rem;
+            padding-left: 3rem;
             text-align: left;
-            width: 20rem;
+            width: 100%;
             color: white;
             background-color: #1897be;
             margin: auto;
@@ -109,6 +136,14 @@
             left: 0.9375rem;
             content: '+';
             font-size: 2em;
+            line-height: 1em;
+        }
+
+        code,
+        pre > code {
+            font-family: 'Fira Mono', monospace;
+            font-size: 1.125rem;
+            line-height: 1.6em;
         }
     </style>
 </head>
@@ -116,22 +151,22 @@
 <body class="body-grid grid no-scroll">
     <header class="y-1" id="header">
         <h1>Adaptive font-size calculator</h1>
+        <p></p>
     </header>
 
     <template is="sparky-template">
         <table class="striped-table y-2" style="width: auto">
             <thead>
                 <tr fn="breakpoints-actions breakpoints">
-                    <th></th>
                     <th class="baseline-align right-align" style="width: 10rem;">Breakpoints:</th>
-                    <th class="baseline-align no-wrap" style="width: 9.375rem;">
-                        <input class="px-input" type="number" :value="{[0.x]}" id="breakpoint-0"
-                        /><label class="rem-label" for="breakpoint-0">{[ 0.x|rem ]}</label>
+                    <th class="baseline-align no-wrap" style="width: 9.375rem;" fn="get:0">
+                        <input class="px-input" type="number" :value="{[x]}"
+                        /><output class="rem-output">{[ x|multiply:0.0625|floatformat:4|replace:'\.?0*$','' ]}em</output>
                     </th>
                     <th class="baseline-align" style="width: 3.375rem;"></th>
-                    <th class="baseline-align no-wrap" style="width: 9.375rem;">
-                        <input class="px-input" type="number" :value="{[1.x]}" id="breakpoint-1"
-                        /><label class="rem-label" for="breakpoint-1">{[ 1.x|rem ]}</label>
+                    <th class="baseline-align no-wrap" style="width: 9.375rem;" fn="get:1">
+                        <input class="px-input" type="number" :value="{[x]}"
+                        /><output class="rem-output">{[ x|multiply:0.0625|floatformat:4|replace:'\.?0*$','' ]}em</output>
                     </th>
                     <th class="baseline-align" style="width: 3.375rem;"></th>
                     <th class="" style="width: 1.875rem;"></th>
@@ -146,64 +181,73 @@
 
             <tbody>
                 <tr fn="lines take:2 each">
-                    <th></th>
                     <th><input type="text" class="right-align" :value="{[label]}" maxlength="18" /></th>
                     <td fn="get:'data.0'">
-                        <input class="px-input" type="number" :value="{[fontsize]}" id="line-0-fontsize-0"
-                        /><label class="rem-label" for="line-0-fontsize-0">{[ fontsize|rem ]}</label>
+                        <input class="px-input" type="number" :value="{[fontsize]}"
+                        /><output class="rem-output">{[ fontsize|multiply:0.0625|floatformat:4|replace:'\.?0*$','' ]}rem</output>
                     </td>
                     <td class="example-td" style="font-size: {[data.0.fontsize]}px;">A</td>
                     <template fn="line-breakpoints each">
-                        <td>
-                            <input class="px-input" type="number" :value="{[point.fontsize]}" id="{[id]}-breakpoint-{[b]}"
-                            /><label class="rem-label" for="{[id]}-breakpoint-{[b]}">{[ point.fontsize|rem ]}</label>
+                        <td fn="get:point">
+                            <input class="px-input" type="number" :value="{[fontsize]}"
+                            /><output class="rem-output">{[ fontsize|multiply:0.0625|floatformat:4|replace:'\.?0*$','' ]}rem</output>
                         </td>
                         <td class="example-td" style="font-size: {[point.fontsize]}px;">A</td>
+                        <td fn="get:point">{[m]}</td>
                     </template>
-                    <td></td>
                     <td></td>
                     <td></td>
                 </tr>
 
                 <tr fn="lines rest:2 each lines-actions">
-                    <th></th>
                     <th><input type="text" class="right-align" :value="{[label]}" maxlength="18" /></th>
                     <td fn="get:'data.0'">
                         <input class="px-input" type="number" :value="{[fontsize]}"
-                        /><label class="rem-label">{[ fontsize|rem ]}</label>
+                        /><output class="rem-output">{[ fontsize|multiply:0.0625|floatformat:4|replace:'\.?0*$','' ]}rem</output>
                     </td>
                     <td class="example-td" style="font-size: {[data.0.fontsize]}px;">A</td>
                     <template fn="line-breakpoints each">
-                        <td>
+                        <td fn="get:point">
                             <!-- Note this has type=number so it picks up input style! -->
-                            <output readonly class="px-input" type="number" id="{[id]}-breakpoint-{[b]}">{[ point.fontsize|floatformat:6|replace:'\.?0*$','' ]}</output
-                            ><label class="rem-label" for="{[id]}-breakpoint-{[b]}">{[ point.fontsize|rem ]}</label>
+                            <output readonly class="px-input" type="number">{[ fontsize|floatformat:6|replace:'\.?0*$','' ]}</output
+                            ><output class="rem-output">{[ fontsize|multiply:0.0625|floatformat:4|replace:'\.?0*$','' ]}rem</output>
                         </td>
                         <td class="example-td" style="font-size: {[point.fontsize]}px;">A</td>
+                        <td>{[point.m]}</td>
                     </template>
-                    <td></td>
                     <td><button class="remove-thumb thumb" name="delete-line" fn="scope">Remove</button></td>
                     <td></td>
                 </tr>
             </tbody>
+
+            <tfoot>
+                <tr>
+                    <td></td>
+                    <td fn="lines-actions">
+                        <button type="button" class="add-before before add-button button" name="create-line">Add size</button>
+                    </td>
+                    <td></td>
+                    <template fn="breakpoints get:1">
+                        <td></td>
+                        <td></td>
+                    </template>
+                </tr>
+            </tfoot>
         </table>
 
-        <div class="y-3 buttons-grid grid" fn="lines-actions">
-            <button type="button" class="add-before before add-button button" name="create-line">Add font size</button>
-        </div>
-
-        <pre class="y-4 x-stretch y-stretch"><code
+        <pre class="y-4 x-stretch y-stretch"><code class="language-css"
             ><template fn="lines each"
                 ><template fn="line-breakpoints each">
-{[line.label|postpad:' ',18]} { font-size: calc({[ breakpoint.c|rem ]} + {[point.m|floatformat:8]} * (100vw + {[ breakpoint.n|rem ]})); }</template
-            ></template>
-            <template fn="breakpoints"></template>
+<span class="token selector">{[line.label|postpad:' ',12]}</span> <span class="token punctuation">{</span> <span class="token property">font-size</span><span class="token punctuation">:</span> <span class="token function">calc(</span><span class="token number">{[ px|multiply:0.0625|floatformat:8|replace:'\.?0*$','' ]}rem</span> + <span class="token number">{[point.m|multiply:100|floatformat:8|replace:'\.?0*$','']}vw</span><span class="token function">)</span><span class="token punctuation">; }</span></template
+            ></template
+            ><template fn="breakpoints get:1">
 
-
-            <template fn="lines each"
-                ><template fn="line-breakpoints each">
-{[line.label|postpad:' ',18]} { font-size: calc({[ breakpoint.c|rem ]} + {[point.m|floatformat:8]} * (100vw + {[ breakpoint.n|rem ]})); }</template
-            ></template>
+<span class="token atrule"><span class="token rule">@media</span> <span class="token punctuation">(</span><span class="token property">min-width</span><span class="token punctuation">:</span> <span class="token number">{[ x|multiply:0.0625|floatformat:8|replace:'\.?0*$','' ]}em</span><span class="token punctuation">)</span> <span class="token punctuation">{</span></template
+><template fn="lines each"
+    ><template fn="line-breakpoints each">
+    <span class="token selector">{[line.label|postpad:' ',8]}</span> <span class="token punctuation">{</span> <span class="token property">font-size</span><span class="token punctuation">:</span> <span class="token number">{[point.fontsize|multiply:0.0625|floatformat:8|replace:'\.?0*$','']}rem</span><span class="token punctuation">; }</span></template
+></template>
+<span class="token punctuation">}</span>
         </code></pre>
     </template>
 

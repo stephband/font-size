@@ -8,20 +8,20 @@ import { lines } from './lines.view.js';
 
 const breakpoints = [{ x: 320 }, { x: 960 }];
 
-function calcConstants(breakpoints, lines) {
+function calcConstants(breakpoints, line0, line1) {
     const x1 = breakpoints[0].x;
     const x2 = breakpoints[1].x;
-    const ya1 = lines[0].data[0].fontsize;
-    const ya2 = lines[0].data[1].fontsize;
-    const yb1 = lines[1].data[0].fontsize;
-    const yb2 = lines[1].data[1].fontsize;
+    const ya1 = line0.data[0].fontsize;
+    const ya2 = line0.data[1].fontsize;
+    const yb1 = line1.data[0].fontsize;
+    const yb2 = line1.data[1].fontsize;
     const ma = (ya2 - ya1) / (x2 - x1);
     const mb = (yb2 - yb1) / (x2 - x1);
     const n = ((ya1 - yb1) / (ma - mb)) - x1;
     const c = ya1 - ma * (x1 + n);
 
-    lines[0].data[1].m = ma;
-    lines[1].data[1].m = mb;
+    line0.data[1].m = ma;
+    line1.data[1].m = mb;
 
     breakpoints[1].n = n;
     breakpoints[1].c = c;
@@ -36,7 +36,7 @@ observe('.', function(breakpoints, records) {
 
     records.added.forEach(function add(breakpoint) {
         unobservers.set(breakpoint, observe('x', function() {
-            calcConstants(breakpoints, lines);
+            calcConstants(breakpoints, Observer(lines[0]), Observer(lines[1]));
         }, breakpoint));
     });
 }, breakpoints);
@@ -70,25 +70,24 @@ mutations('.', breakpoints)
     .forEach(function(line) {
         const unobserve = unobservers.get(line);
         if (unobserve) { unobserve.forEach((fn) => fn()); }
+
+        function update(breakpoints, lines) {
+            calcConstants(breakpoints, lines[0], lines[1]);
+            breakpoints
+            .slice(2)
+            .forEach(function (breakpoint, i) {
+                const point = line.data[i + 2];
+                point.fontsize = calcFontSize(breakpoint, point);
+            });
+        }
+
         unobservers.set(line, [
             observe('fontsize', function(fontsize) {
-                calcConstants(breakpoints, lines);
-                breakpoints
-                .slice(2)
-                .forEach(function(breakpoint, i) {
-                    const point = line.data[i + 2];
-                    point.fontsize = calcFontSize(breakpoint, point);
-                });
+                update(breakpoints, lines);
             }, line.data[0]),
 
             observe('fontsize', function(fontsize) {
-                calcConstants(breakpoints, lines);
-                breakpoints
-                .slice(2)
-                .forEach(function (breakpoint, i) {
-                    const point = line.data[i + 2];
-                    point.fontsize = calcFontSize(breakpoint, point);
-                });
+                update(breakpoints, lines);
             }, line.data[1])
         ]);
     });
@@ -98,8 +97,9 @@ mutations('.', breakpoints)
     .slice(2)
     .forEach(function(line) {
         const unobserve = unobservers.get(line);
-        if (unobserve) { unobserve(); }
-        unobservers.set(line, observe('fontsize', function(fontsize) {
+        if (unobserve) { unobserve.forEach((fn) => fn()); }
+
+        function update(breakpoints, line) {
             breakpoints
             .slice(1)
             .forEach(function(breakpoint, i) {
@@ -107,7 +107,24 @@ mutations('.', breakpoints)
                 point.m        = calcGradient(breakpoints[i], breakpoint, line.data[i]);
                 point.fontsize = calcFontSize(breakpoint, point);
             });
-        }, line.data[0]));
+        }
+
+        unobservers.set(line, [
+            // Observe starting fontsize
+            observe('fontsize', function(fontsize) {
+                update(breakpoints, line);
+            }, line.data[0]),
+
+            // Observe breakpoint n
+            observe('n', function(fontsize) {
+                update(breakpoints, line);
+            }, breakpoints[1]),
+
+            // Observe breakpoint c
+            observe('c', function(fontsize) {
+                update(breakpoints, line);
+            }, breakpoints[1])
+        ]);
     });
 }, mutations('.', lines))
 .each(console.log);
@@ -118,13 +135,23 @@ Sparky.fn('line-breakpoints', function(node) {
         return breakpoints
         .slice(1)
         .map(function(breakpoint, b) {
-            return {
-                line: line,
-                id: id,
-                b: b + 1,
+            const point = line.data[b + 1];
+
+            const data = Observer({
+                line:       line,
                 breakpoint: breakpoint,
-                point:      line.data[b + 1]
-            };
+                point:      point
+            });
+
+            function update() {
+                data.px = breakpoint.c + point.m * breakpoint.n;
+            }
+
+            observe('m', update, point);
+            observe('c', update, breakpoint);
+            observe('n', update, breakpoint);
+
+            return data;
         })
     });
 });
