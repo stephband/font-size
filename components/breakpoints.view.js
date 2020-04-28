@@ -6,7 +6,7 @@ import { lines } from './lines.view.js';
 
 /* Data */
 
-const breakpoints = [{ x: 320 }, { x: 960 }];
+const breakpoints = [{ x: 320 }, { x: 1440 }];
 
 function calcConstants(breakpoints, line0, line1) {
     const x1 = breakpoints[0].x;
@@ -130,7 +130,6 @@ mutations('.', breakpoints)
 .each(console.log);
 
 Sparky.fn('line-breakpoints', function(node) {
-    const id = identify(node);
     return this.map(function(line) {
         return breakpoints
         .slice(1)
@@ -153,6 +152,25 @@ Sparky.fn('line-breakpoints', function(node) {
 
             return data;
         })
+    });
+});
+
+Sparky.fn('breakpoints-line', function(node) {
+    return this.map(function(line) {
+        const data = Observer({
+            data:        line.data,
+            breakpoints: breakpoints
+        });
+
+        function update() {
+            data.px = breakpoints[1].c + line.data[1].m * breakpoints[1].n;
+        }
+
+        observe('m', update, line.data[1]);
+        observe('c', update, breakpoints[1]);
+        observe('n', update, breakpoints[1]);
+
+        return data;
     });
 });
 
