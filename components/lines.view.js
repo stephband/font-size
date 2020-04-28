@@ -12,7 +12,7 @@ export const lines = [{
 }, {
     label: 'h1',
     data: [{
-        fontsize: 31.25
+        fontsize: 32
     }, {
         fontsize: 54
     }]
