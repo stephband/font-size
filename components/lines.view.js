@@ -39,7 +39,7 @@ Sparky.fn('lines-actions', delegate({
         'button[name]': overload(get('name'), {
             'create-line': function(node, e) {
                 observer.push({
-                    label: '',
+                    label: '.class',
                     data: [{
                         fontsize: 16
                     }, {}]

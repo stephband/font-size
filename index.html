@@ -7,192 +7,28 @@
     <meta name="description" content="A CSS font-size calculator for creating font-size hierarchies that adapt to the viewport" />
     <meta name="viewport" content="width=device-width" />
 
-    <title>Adaptive font-size calculator</title>
+    <title>Font size calculator</title>
 
     <script>
-    document.documentElement.className = 'js';
-    window.DEBUG = true;
-    window.config = {
-        path: '../'//'https://stephen.band/'
-    };
+    document.documentElement.className += ' js content-loading loading';
+    window.addEventListener('DOMContentLoaded', () => document.documentElement.classList.remove('content-loading'));
+    window.addEventListener('load', () => document.documentElement.classList.remove('loading'));
+    window.DEBUG = false;
     </script>
 
-    <link rel="stylesheet" href="../bolt/dist/bolt.min.css" />
+    <!--link rel="stylesheet" href="../bolt/dist/bolt.min.css" />
     <link rel="stylesheet" href="../bolt/fonts/source-sans-pro.css" />
     <link rel="stylesheet" href="../bolt/fonts/fira-mono.css" />
     <link rel="stylesheet" href="../fn/css/prism-cruncher.css" />
-    <link rel="stylesheet" href="../dom/css/dom.css" />
+    <link rel="stylesheet" href="../dom/css/dom.css" /-->
 
-    <style>
-        :root {
-            background-color: #101e23;
-        }
-
-        body {
-            font-family: 'Source Sans Pro';
-            background-color: #f0f1e6;
-        }
-
-        .text-01, h1,
-        .text-02, h2,
-        .text-03, h3,
-        .text-04, h4,
-        .text-05, h5,
-        .text-06, h6,
-        .text-08, body,
-        .text-09 {
-            font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
-            font-style: none;
-            text-transform: none;
-        }
-
-        .example-td {
-            text-align: center;
-        }
-
-        .px-input {
-            width: 9.375rem;
-            display: inline-block;
-            padding-right: 3.75rem;
-            -webkit-appearance: none;
-        }
-
-        .px-input::-webkit-outer-spin-button,
-        .px-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        /* Firefox */
-        .px-input[type=number] {
-            -moz-appearance: textfield;
-        }
-
-        .rem-output {
-            display: inline-block;
-            font-size: 0.625rem;
-            font-family: 'Fira Mono', monospace;
-            width: 3.75rem;
-            margin: 0;
-            margin-left: -3.75rem;
-            padding-right: var(--input-padding-right);
-            text-align: right;
-            color: #888888;
-            pointer-events: none;
-        }
-
-        output[type="number"] {
-            background-color: transparent;
-            border-color: transparent;
-        }
-
-        .body-grid {
-            padding-top: 1.875rem;
-            color: #101e23;
-            row-gap: 3rem;
-            grid-template-rows: min-content min-content min-content 1fr;
-        }
-
-        .body-grid > * {
-            margin: 0;
-            width: 100%;
-            padding-left: 11.11111111%;
-            padding-right: 11.11111111%;
-        }
-
-        .body-grid > .striped-table {
-            margin-left: -0.75rem;
-            margin-right: -0.75rem;
-        }
-
-        .body-grid > svg {
-            padding: 0;
-            margin-right: 11.11111111%;
-            margin-bottom: 5.5rem;
-            stroke: #686a61;
-        }
-
-        @media (max-width: 75em) {
-            .body-grid > svg {
-                display: none;
-            }
-        }
-
-        line {
-            stroke-linecap: round;
-        }
-
-        .tick-line,
-        .axis-line {
-            stroke: #989a91;
-        }
-
-        .breakpoint-line {
-            stroke: #989a91;
-            stroke-dasharray: 2 4;
-        }
-
-        .body-grid > pre {
-            background-color: #101e23;
-            padding-bottom: 3.75rem;
-        }
-
-        .body-grid > pre > code {
-            height: 100%;
-            color: #e7e8e2;
-            background-color: transparent;
-            box-shadow: none;
-        }
-
-        .add-button {
-            padding-left: 3rem;
-            text-align: left;
-            width: 100%;
-            color: white;
-            background-color: #1897be;
-            margin: auto;
-        }
-
-        .add-before::before {
-            position: absolute;
-            top: 50%;
-            margin-top: -0.5em;
-            left: 0.9375rem;
-            content: '+';
-            font-size: 2em;
-            line-height: 1em;
-        }
-
-        code,
-        pre > code {
-            font-family: 'Fira Mono', monospace;
-            font-size: 1.125rem;
-            line-height: 1.6em;
-        }
-
-        body > .credit-text {
-            position: absolute;
-            bottom: 0.5rem;
-            left: 0;
-        }
-
-        .credit-text {
-            white-space: nowrap;
-            color: #4d656f;
-        }
-
-        .credit-text > a  {
-            color: #6d8d9a;
-            text-decoration: none;
-        }
-
-        h1 { font-size: calc(1.5rem + 1.25vw); }
-    </style>
+    <link rel="stylesheet" href="style.min.css" />
 </head>
 
 <body class="body-grid grid">
     <header class="x-1 y-1" id="header">
-        <h1>Adaptive font-size calculator</h1>
+        <h1>Font size calculator</h1>
+        <p>Generate a CSS stylesheet with a hierarchy of font-sizes that adapt to the width of the viewport.</p>
     </header>
 
     <template is="sparky-template">
@@ -303,14 +139,14 @@
         <pre class="y-4 x-stretch y-stretch"><code class="language-css"
             ><template fn="lines each"
                 ><template fn="line-breakpoints each">
-<span class="token selector">{[line.label|postpad:' ',12]}</span> <span class="token punctuation">{</span> <span class="token property">font-size</span><span class="token punctuation">:</span> <span class="token function">calc(</span><span class="token number">{[ px|multiply:0.0625|floatformat:8|replace:'\.?0*$','' ]}rem</span> + <span class="token number">{[point.m|multiply:100|floatformat:8|replace:'\.?0*$','']}vw</span><span class="token function">)</span><span class="token punctuation">; }</span></template
+<span class="token selector">{[line.label|postpad:' ',15]}</span> <span class="token punctuation">{</span> <span class="token property">font-size</span><span class="token punctuation">:</span> <span class="token function">calc(</span><span class="token number">{[ px|multiply:0.0625|floatformat:8|replace:'\.?0*$','' ]}rem</span> + <span class="token number">{[point.m|multiply:100|floatformat:8|replace:'\.?0*$','']}vw</span><span class="token function">)</span><span class="token punctuation">; }</span></template
             ></template
             ><template fn="breakpoints get:1">
 
 <span class="token atrule"><span class="token rule">@media</span> <span class="token punctuation">(</span><span class="token property">min-width</span><span class="token punctuation">:</span> <span class="token number">{[ x|multiply:0.0625|floatformat:8|replace:'\.?0*$','' ]}em</span><span class="token punctuation">)</span> <span class="token punctuation">{</span></template
 ><template fn="lines each"
     ><template fn="line-breakpoints each">
-    <span class="token selector">{[line.label|postpad:' ',8]}</span> <span class="token punctuation">{</span> <span class="token property">font-size</span><span class="token punctuation">:</span> <span class="token number">{[point.fontsize|multiply:0.0625|floatformat:8|replace:'\.?0*$','']}rem</span><span class="token punctuation">; }</span></template
+    <span class="token selector">{[line.label|postpad:' ',15]}</span> <span class="token punctuation">{</span> <span class="token property">font-size</span><span class="token punctuation">:</span> <span class="token number">{[point.fontsize|multiply:0.0625|floatformat:8|replace:'\.?0*$','']}rem</span><span class="token punctuation">; }</span></template
 ></template>
 <span class="token punctuation">}</span>
         </code></pre>
@@ -318,9 +154,5 @@
         <p class="credit-text">Built by <a href="https://stephen.band">Stephen Band</a> at <a href="https://cruncher.ch">cruncher.ch</a></p>
     </template>
 
-    <script type="module">
-        import '../dom/js/device.js';
-        import './components/lines.view.js';
-        import './components/breakpoints.view.js';
-    </script>
+    <script type="module" src="module.rolled.js"></script>
 </body>
