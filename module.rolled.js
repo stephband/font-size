@@ -22,6 +22,7 @@ function cache(fn) {
 
 /**
 curry(fn [, muteable, arity])
+Returns a function that wraps `fn` and makes it partially applicable.
 */
 const A     = Array.prototype;
 
@@ -110,9 +111,9 @@ function curry(fn, muteable, arity) {
 
 var curry$1 = curry;
 
-/*
+/**
 rest(n, array)
-*/
+**/
 
 function rest(i, object) {
     if (object.slice) { return object.slice(i); }
@@ -196,7 +197,7 @@ function toArray(object) {
 const A$1 = Array.prototype;
 const S = String.prototype;
 
-/*
+/**
 by(fn, a, b)
 Compares `fn(a)` against `fn(b)` and returns `-1`, `0` or `1`. Useful for sorting
 objects by property:
@@ -204,7 +205,7 @@ objects by property:
 ```
 [{id: '2'}, {id: '1'}].sort(by(get('id')));  // [{id: '1'}, {id: '2'}]
 ```
-*/
+**/
 
 function by(fn, a, b) {
     const fna = fn(a);
@@ -212,9 +213,19 @@ function by(fn, a, b) {
     return fnb === fna ? 0 : fna > fnb ? 1 : -1 ;
 }
 
+/**
+byAlphabet(a, b)
+Compares `a` against `b` alphabetically using the current locale alphabet.
+**/
+
 function byAlphabet(a, b) {
     return S.localeCompare.call(a, b);
 }
+
+/**
+each(fn, array)
+Calls `fn` for each member in `array`.
+**/
 
 function each(fn, object) {
     // A stricter version of .forEach, where the callback fn
@@ -233,15 +244,32 @@ function each(fn, object) {
     return object;
 }
 
+/**
+map(fn, object)
+Delegates to `object.map` or `Array.map` to return a new collection of mapped
+values.
+**/
+
 function map(fn, object) {
     return object && object.map ? object.map(fn) : A$1.map.call(object, fn) ;
 }
+
+/**
+filter(fn, object)
+Delegates to `object.filter` or `Array.filter` to return a new collection of
+filtered objects.
+**/
 
 function filter(fn, object) {
     return object.filter ?
         object.filter(fn) :
         A$1.filter.call(object, fn) ;
 }
+
+/**
+reduce(fn, seed, object)
+Delegates to `object.reduce` or `Array.reduce` to return a reduced value.
+**/
 
 function reduce(fn, seed, object) {
     return object.reduce ?
@@ -252,6 +280,12 @@ function reduce(fn, seed, object) {
 function sort(fn, object) {
     return object.sort ? object.sort(fn) : A$1.sort.call(object, fn);
 }
+
+/**
+concat(array2, array1)
+Where JavaScript's Array.concat only works reliably on arrays, `concat`
+will glue together any old array-like object.
+**/
 
 function concat(array2, array1) {
     // A.concat only works with arrays - it does not flatten array-like
@@ -876,6 +910,11 @@ Returns `typeof object`.
 function toType(object) {
     return typeof object;
 }
+
+/**
+prepend(string1, string2)
+Returns `str1 + str2`.
+**/
 
 function prepend(string1, string2) {
     return '' + string1 + string2;
@@ -2622,10 +2661,10 @@ Stream$1.throttle = function(timer) {
     });
 };
 
-/*
+/**
 remove(array, value)
 Remove `value` from `array`. Where `value` is not in `array`, does nothing.
-*/
+**/
 
 function remove(array, value) {
     if (array.remove) { array.remove(value); }
@@ -2862,12 +2901,12 @@ function isObservable(object) {
 		&& !ArrayBuffer.isView(object) ;
 }
 
-/*
+/**
 Observer(object)
 Create an Observer proxy around `object`. In order for `observe(...)` to detect
 mutations, changes must be made to this proxy rather than the original
 `object`.
-*/
+**/
 
 function Observer(object) {
 	return !object ? undefined :
@@ -2888,12 +2927,12 @@ function Target(object) {
 		|| object ;
 }
 
-/*
+/**
 parseSelector(string)
 
 Takes a string of the form '[key=value, ... ]' and returns a function isMatch
 that returns true when passed an object that matches the selector.
-*/
+**/
 
 //                 1 key                 2 quote 3 value           4 comma 5 closing bracket
 const rselector = /^([^\]=,\s]+)\s*(?:=\s*(['"])?([^\]=,\s]+)\2\s*)?(?:(,)|(])(\s*\.$)?)\s*/;
@@ -3107,7 +3146,7 @@ function observeUnknown(object, path, data) {
         readSelector(object, isMatch, path, data) ;
 }
 
-/*
+/**
 observe(path, fn, object [, init])
 
 Observe `path` in `object` and call `fn(value)` with the value at the
@@ -3122,7 +3161,7 @@ callback to be called.
 (To force the callback to always be called on setup, pass in `NaN` as an
 `init` value. In JS `NaN` is not equal to anything, even `NaN`, so it
 always initialises.)
-*/
+**/
 
 function observe(path, fn, object, initialValue) {
     return observeUnknown(Observer(object) || object, path + '', {
@@ -3164,17 +3203,21 @@ function mutations(path, object) {
 	});
 }
 
-/*
-.append(str2, str1)
+/**
+append(str2, str1)
+Returns `str1 + str2`.
+**/
 
-Returns `str1 + str2` as string.
-*/
-
-function append(string1, string2) {
-    return '' + string2 + string1;
+function append(string2, string1) {
+    return '' + string1 + string2;
 }
 
 curry$1(append);
+
+/**
+prepad(chars, n, string)
+Pads `string` to `n` characters by prepending `chars`.
+**/
 
 function prepad(chars, n, value) {
     var string = value + '';
@@ -3191,6 +3234,11 @@ function prepad(chars, n, value) {
 
 curry$1(prepad);
 
+/**
+postpad(chars, n, string)
+Pads `string` to `n` characters by appending `chars`.
+**/
+
 function postpad(chars, n, value) {
     var string = value + '';
 
@@ -3203,13 +3251,15 @@ function postpad(chars, n, value) {
 
 curry$1(postpad);
 
-/*
+/**
 slugify(string)
 
 Replaces any series of non-word characters with a `'-'` and lowercases the rest.
 
+```js
     slugify('Party on #mydudes!') // 'party-on-mydudes'
-*/
+```
+**/
 
 function slugify(string) {
     if (typeof string !== 'string') { return; }
@@ -3220,6 +3270,11 @@ function slugify(string) {
     .replace(/[\W_]+$/, '')
     .replace(/[\W_]+/g, '-');
 }
+
+/**
+toCamelCase(string)
+Capitalises any Letter following a `'-'` and removes the dash.
+**/
 
 function toCamelCase(string) {
     // Be gracious in what we accept as input
@@ -3240,11 +3295,11 @@ function ap(data, fns) {
 	}
 }
 
-/*
+/**
 insert(fn, array, object)
 Inserts `object` into `array` at the first index where the result of
 `fn(object)` is greater than `fn(array[index])`.
-*/
+**/
 
 const A$5 = Array.prototype;
 
@@ -3257,9 +3312,9 @@ function insert(fn, array, object) {
     return object;
 }
 
-/*
+/**
 take(n, array)
-*/
+**/
 
 function take(i, object) {
     if (object.slice) { return object.slice(0, i); }
@@ -3271,7 +3326,7 @@ function take(i, object) {
     return a;
 }
 
-/*
+/**
 update(create, destroy, fn, target, source)
 
 Returns a new array containing items that are either matched objects from
@@ -3279,7 +3334,7 @@ Returns a new array containing items that are either matched objects from
 new objects created by calling `create` on a `source` object. Any objects
 in `target` that are not matched to `source` objects are destroyed by calling
 `destroy` on them.
-*/
+**/
 
 const assign$2 = Object.assign;
 
@@ -3313,6 +3368,10 @@ function update(create, destroy, fn, target, source) {
 
     return output;
 }
+
+/**
+diff(array1, array2)
+**/
 
 function diff(array, object) {
     var values = toArray(array);
@@ -3348,10 +3407,10 @@ function unite(array, object) {
     .concat(values);
 }
 
-/*
+/**
 last(array)
 Gets the last value from an array.
-*/
+**/
 
 function last$1(array) {
     if (typeof array.length === 'number') {
@@ -3368,17 +3427,18 @@ function exp(n, x) { return Math.pow(n, x); }
 function log(n, x) { return Math.log(x) / Math.log(n); }
 function root(n, x) { return Math.pow(x, 1/n); }
 
-/*
-limit(min, max, n)
-*/
+/**
+clamp(min, max, n)
+**/
 
 function limit(min, max, n) {
+    console.trace('Deprecated: Fn limit() is now clamp()');
     return n > max ? max : n < min ? min : n;
 }
 
-/*
+/**
 wrap(min, max, n)
-*/
+**/
 
 function wrap(min, max, n) {
     return (n < min ? max : min) + (n - min) % (max - min);
@@ -3395,9 +3455,9 @@ const curriedRoot  = curry$1(root);
 const curriedLimit = curry$1(limit);
 const curriedWrap  = curry$1(wrap);
 
-/*
+/**
 todB(level)
-*/
+**/
 
 // A bit disturbingly, a correction factor is needed to make todB() and
 // to toLevel() reciprocate more accurately. This is quite a lot to be off
@@ -3406,31 +3466,31 @@ const dBCorrectionFactor = (60 / 60.205999132796244);
 
 function todB(n)    { return 20 * Math.log10(n) * dBCorrectionFactor; }
 
-/*
+/**
 toLevel(dB)
-*/
+**/
 
 function toLevel(n) { return Math.pow(2, n / 6); }
 
-/*
+/**
 toRad(deg)
-*/
+**/
 
 const angleFactor = 180 / Math.PI;
 
 function toRad(n) { return n / angleFactor; }
 
-/*
+/**
 toDeg(rad)
-*/
+**/
 
 function toDeg(n)   { return n * angleFactor; }
 
-/*
+/**
 gcd(a, b)
 
 Returns the greatest common divider of a and b.
-*/
+**/
 
 function gcd(a, b) {
     return b ? gcd(b, a % b) : a;
@@ -3438,11 +3498,11 @@ function gcd(a, b) {
 
 const curriedGcd = curry$1(gcd);
 
-/*
+/**
 lcm(a, b)
 
 Returns the lowest common multiple of a and b.
-*/
+**/
 
 function lcm(a, b) {
     return a * b / gcd(a, b);
@@ -3450,13 +3510,13 @@ function lcm(a, b) {
 
 const curriedLcm = curry$1(lcm);
 
-/*
+/**
 mod(divisor, n)
 
 JavaScript's modulu operator (`%`) uses Euclidean division, but for
 stuff that cycles through 0 the symmetrics of floored division are often
 are more useful. This function implements floored division.
-*/
+**/
 
 function mod(d, n) {
     var value = n % d;
@@ -3465,9 +3525,9 @@ function mod(d, n) {
 
 curry$1(mod);
 
-/*
+/**
 toPolar(cartesian)
-*/
+**/
 
 function toPolar(cartesian) {
     var x = cartesian[0];
@@ -3485,9 +3545,9 @@ function toPolar(cartesian) {
     ];
 }
 
-/*
+/**
 toCartesian(polar)
-*/
+**/
 
 function toCartesian(polar) {
     var d = polar[0];
@@ -6491,22 +6551,28 @@ function urlFromData(url, data) {
         url + '?' + dataToQuery(data) ;
 }
 
-function createOptions(method, mimetype, data, controller) {
-    return method === 'GET' ? {
+function createOptions(method, data, head, controller) {
+    const contentType = typeof head === 'string' ?
+        head :
+        head['Content-Type'] ;
+
+    const headers = createHeaders(contentType, assign$8(
+        config.headers && data ? config.headers(data) : {},
+        typeof head === 'string' ? nothing : head
+    ));
+
+    const options = {
         method:  method,
-        headers: createHeaders(mimetype, config.headers ? config.headers(data) : {}),
+        headers: headers,
         credentials: 'same-origin',
         signal: controller && controller.signal
-    } : {
-        method:  method,
-        // Process headers before body, allowing us to read a CSRFToken,
-        // which may be in data, in createHeaders() before removing it
-        // from data in body().
-        headers: createHeaders(mimetype, config.headers ? config.headers(data) : {}),
-        body:    createBody(mimetype, config.body ? config.body(data) : data),
-        credentials: 'same-origin',
-        signal: controller && controller.signal
-    } ;
+    };
+
+    if (method !== 'GET') {
+        options.body = createBody(contentType, config.body ? config.body(data) : data);
+    }
+
+    return options;
 }
 
 const responders = {
@@ -6555,11 +6621,12 @@ function respond(response) {
 
 
 /**
-request(type, url, data, mimetype)
+request(type, url, data, mimetype | headers)
 
 Uses `fetch()` to send a request to `url`. Where `type` is `"GET"`, `data` is
-serialised and appended to the URL, otherwise it is sent as a payload
-conforming to the given `mimetype`.
+serialised and appended to the URL, otherwise it is sent as a request body.
+The 4th parameter may be a content type string or a headers object (in which
+case it must have a `'Content-Type'` property).
 **/
 
 function request(type = 'GET', url, data, mimetype = 'application/json') {
@@ -6578,7 +6645,7 @@ function request(type = 'GET', url, data, mimetype = 'application/json') {
     }
 
     // param[4] is an optional abort controller
-    return fetch(url, createOptions(method, mimetype, data, arguments[4]))
+    return fetch(url, createOptions(method, data, mimetype, arguments[4]))
     .then(respond);
 }
 
@@ -8770,6 +8837,10 @@ function renderChecked(name, node, value) {
     // Return DOM mod count
     return count;
 }
+
+
+// Mount
+
 function mountToken(source, render, renderers, options, node, name) {
     // Shortcut empty string
     if (!source) { return; }
@@ -9311,7 +9382,7 @@ function setupSrc(src, input, firstRender, options, renderers) {
         const content = source.content ? source.content.cloneNode(true) :
             source instanceof SVGElement ? source.cloneNode(true) :
             undefined ;
-console.log('SETUP', source.innerHTML, content.innerHTML);
+
         return setupInclude(content, input, firstRender, options, renderers);
     }
 
@@ -9338,7 +9409,7 @@ console.log('SETUP', source.innerHTML, content.innerHTML);
 
 function setupInclude(content, input, firstRender, options, renderers) {
     var renderer;
-console.log('CONTENT', content);
+
     input.each((scope) => {
         if (renderer) {
             return renderer.push(scope);
@@ -9520,13 +9591,9 @@ function Sparky(selector, settings) {
 
     const options = assign$g({}, config$1, settings);
 
-    // Todo: attrFn is just for logging later on... get rid of, maybe?
     options.fn = options.fn
         || target.getAttribute(options.attributeFn)
         || '';
-
-    // Keep hold of attrFn for debugging
-    //if (DEBUG) { var attrFn = options.fn; }
 
     this.label = makeLabel(target, options);
     this.renderCount = 0;
@@ -9564,7 +9631,7 @@ function Sparky(selector, settings) {
     options.fn  = null;
     options.src = null;
 
-    //if (DEBUG) { logNode(name, attrFn, options.src); }
+    if (DEBUG$6) { logNode(target, options.fn, options.src); }
 
     src ?
         name === 'use' ?
@@ -10186,6 +10253,8 @@ if (window.console && window.console.log) {
     console.log('%cSparky%c      - https://labs.cruncher.ch/sparky', 'color: #a3b31f; font-weight: 600;', 'color: inherit; font-weight: 300;');
 }
 
+const DEBUG$c = window.DEBUG === true || window.DEBUG === 'sparky';
+
 Sparky.fn = register;
 Sparky.pipe = pipe$1;
 
@@ -10229,7 +10298,7 @@ requestTick(function() {
         construct: function() {
             const fn = this.getAttribute(config$1.attributeFn);
 
-            if (DEBUG) { logNode(this, fn, this.getAttribute(config$1.attributeSrc)); }
+            if (DEBUG$c) { logNode(this, fn, this.getAttribute(config$1.attributeSrc)); }
 
             if (fn) {
                 Sparky(this, { fn: fn });
