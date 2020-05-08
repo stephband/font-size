@@ -17,7 +17,7 @@
   },
   "scripts": {
     "lint": "eslint ./components/*.js",
-    "build-css": "node ../bolt/build-css.js style.min.css ../font-size/package.json",
+    "build-css": "node ../fn/build-css.js package.json style.min.css",
     "build-module": "rollup ./module.js --o module.rolled.js --f esm"
   },
   "style": [
