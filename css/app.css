@@ -87,6 +87,11 @@ output[type="number"] {
     stroke: #686a61;
 }
 
+.body-grid > * > p {
+    margin-left: 0;
+    max-width: 40em;
+}
+
 @media (max-width: 75em) {
     .body-grid > svg {
         display: none;
