@@ -16,12 +16,6 @@
     window.DEBUG = false;
     </script>
 
-    <!--link rel="stylesheet" href="../bolt/style.min.css" />
-    <link rel="stylesheet" href="../bolt/fonts/source-sans-pro.css" />
-    <link rel="stylesheet" href="../bolt/fonts/fira-mono.css" />
-    <link rel="stylesheet" href="../fn/css/prism-cruncher.css" />
-    <link rel="stylesheet" href="../dom/css/dom.css" /-->
-
     <link rel="stylesheet" href="style.min.css" />
 </head>
 
@@ -115,7 +109,7 @@
             </tfoot>
         </table>
 
-        <svg class="x-1 y-2 end-x end-y" viewbox="0 0 1920 100" style="width: 22.22222222%; height: 12.5rem;" preserveAspectRatio="none">
+        <svg class="x-1 y-2 x-end y-end" viewbox="0 0 1920 100" style="width: 22.22222222%; height: 12.5rem;" preserveAspectRatio="none">
             <defs>
                 <line x1="{[x]}" y1="0" x2="{[x]}" y2="100" class="breakpoint-line" id="breakpoint-line"></line>
                 <g id="line">
@@ -138,13 +132,13 @@
 
         <div class="x-1 1x">
             <p>
-            This technique makes font-size partially dependent on <code>rem</code> units, partially on <code>vw</code> units.
+            This technique makes font-sizes partially dependent on <code>rem</code> units, partially on <code>vw</code> units.
             One thing to be aware of is the more that balance shifts towards <code>vw</code>s, the less control you give
             user via their browser's font size setting.
             </p>
         </div>
 
-        <pre class="y-4 stretch-x stretch-y"><code class="language-css"
+        <pre class="y-4 x-stretch y-stretch"><code class="language-css"
             ><template fn="lines each"
                 ><template fn="line-breakpoints each">
 <span class="token selector">{[line.label|postpad:' ',15]}</span> <span class="token punctuation">{</span> <span class="token property">font-size</span><span class="token punctuation">:</span> <span class="token function">calc(</span><span class="token number">{[ px|multiply:0.0625|floatformat:8|replace:'\.?0*$','' ]}rem</span> + <span class="token number">{[point.m|multiply:100|floatformat:8|replace:'\.?0*$','']}vw</span><span class="token function">)</span><span class="token punctuation">; }</span></template
