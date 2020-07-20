@@ -1,7 +1,8 @@
 {
-  "name": "bolt",
+  "name": "font-size",
+  "title": "Font size calculator",
   "description": "Generate a CSS stylesheet with a hierarchy of font-sizes that adapt to the width of the viewport.",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "author": "@stephband",
   "repository": {
     "type": "git",

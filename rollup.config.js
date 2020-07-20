@@ -29,8 +29,8 @@ export default {
 
     manualChunks: {
         // ManualChunks force chunks bundled from multiple files
-        'lib/fn.rolled':  ['../fn/module.js'],
-        'lib/dom.rolled': ['../dom/module.js']
+        'modules/fn.rolled':      ['../fn/module.js'],
+        'modules/dom.rolled':     ['../dom/module.js']
     },
 
     output: {
@@ -46,7 +46,7 @@ export default {
     },
 
     plugins: [visualizer({
-        filename: './static/module.html',
+        filename: './module.html',
         open:     true,
         template: 'sunburst',
         gzipSize: true
