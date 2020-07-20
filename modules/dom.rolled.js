@@ -1,4 +1,4 @@
-// font-size 1.0.2 (Built 2020-07-20 17:23)
+// font-size 1.0.2 (Built 2020-07-20 17:24)
 
 import { c as cache$1, S as Stream, o as overload, i as id, p as parseVal, t as toType, a as curry, n as noop, b as toArray, g as get, d as pipe, s as set, l as linear, e as nothing, f as choose } from './fn.rolled.js';
 
