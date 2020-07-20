@@ -13,11 +13,12 @@
   "license": "MIT",
   "devDependencies": {
     "eslint": "^6.5.1",
-    "rollup": "^1.32.1"
+    "rollup": "^2.21.0",
+    "rollup-plugin-visualizer": "^4.0.4"
   },
   "scripts": {
     "lint": "eslint ./components/*.js",
     "build-css": "node ../fn/build-css.js style.css style.min.css",
-    "build-module": "rollup ./module.js --o module.rolled.js --f esm"
+    "build-module": "rollup --config ./rollup.config.js"
   }
 }
