@@ -6,7 +6,17 @@ import { lines } from './lines.view.js';
 
 /* Data */
 
-const breakpoints = [{ x: 320 }, { x: 1440 }];
+const breakpoints = window.location.search
+    &&
+    // Breakpoints from the URL
+    (new URLSearchParams(window.location.search))
+    .get('breakpoints')
+    .split(',')
+    .map((n) => ({ x: parseInt(n, 10) }))
+
+    ||
+    // Default breakpints
+    [{ x: 320 }, { x: 1440 }] ;
 
 function calcConstants(breakpoints, line0, line1) {
     const x1 = breakpoints[0].x;
@@ -60,8 +70,20 @@ function calcFontSize(breakpoint, data) {
     return data.m * (breakpoint.x + breakpoint.n) + breakpoint.c
 }
 
-mutations('.', breakpoints)
-.combine(function(breakpoints, lines) {
+function updateUrlQuery(breakpoints, lines) {
+    // Update URL bar without navigating
+    window.history.pushState('', '', '?' +
+        // Breakpionts
+        'breakpoints=' + breakpoints.map(get('x')) + '&' +
+
+        // Lines
+        lines.map(function(line) {
+            return line.label + '=' + line.data.map(get('fontsize')).join(',');
+        }, '').join('&')
+    );
+}
+
+function breakpointsAndLines(breakpoints, lines) {
     const unobservers = new WeakMap();
 
     // Observe first two lines
@@ -107,6 +129,8 @@ mutations('.', breakpoints)
                 point.m        = calcGradient(breakpoints[i], breakpoint, line.data[i]);
                 point.fontsize = calcFontSize(breakpoint, point);
             });
+
+            updateUrlQuery(breakpoints, lines);
         }
 
         unobservers.set(line, [
@@ -126,7 +150,11 @@ mutations('.', breakpoints)
             }, breakpoints[1])
         ]);
     });
-}, mutations('.', lines))
+}
+
+
+mutations('.', breakpoints)
+.combine(breakpointsAndLines, mutations('.', lines))
 .each(console.log);
 
 Sparky.fn('line-breakpoints', function(node) {
